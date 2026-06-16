@@ -7,9 +7,28 @@
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>*{box-sizing:border-box;margin:0;padding:0}</style>
 </head>
 <body>
 <div id="root"></div>
-<script type="text/babel" src="app.jsx"></script>
+<script type="text/babel">
+const {useState,useEffect,useRef}=React;
+function App(){
+  const [open,setOpen]=useState(false);
+  if(!open) return(
+    <div onClick={()=>setOpen(true)} style={{minHeight:"100vh",background:"#1A1F3A",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",cursor:"pointer"}}>
+      <div style={{fontSize:60}}>☽</div>
+      <div style={{color:"#E8C97A",fontSize:28,fontWeight:700,marginTop:16,fontFamily:"Georgia,serif"}}>Mon Cahier</div>
+      <div style={{color:"#C9A84C88",fontSize:14,marginTop:12,letterSpacing:"0.2em"}}>Appuyez pour ouvrir</div>
+    </div>
+  );
+  return(
+    <div style={{minHeight:"100vh",background:"#FAF7F0",fontFamily:"Georgia,serif",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{fontSize:20,color:"#3D2B1F"}}>✓ Cahier chargé avec succès !<br/>Le code complet sera ajouté ici.</div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
 </body>
 </html>
