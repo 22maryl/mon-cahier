@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,26 +8,294 @@
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<style>*{box-sizing:border-box;margin:0;padding:0}</style>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Georgia,serif}textarea,input,select{font-family:Georgia,serif}@keyframes spin{to{transform:rotate(360deg)}}@keyframes tw{0%,100%{opacity:.1}50%{opacity:.8}}</style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 const {useState,useEffect,useRef}=React;
+const SB="https://ixbyhvjjksxkvplbratq.supabase.co";
+const SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Ynlodmpqa3N4a3ZwbGJyYXRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NTAzODEsImV4cCI6MjA5NzAyNjM4MX0.QDhSAmZ3wrQRxTsm4Xb5HGOyXI4xn_0Qyv5uzopeZF4";
+const H={"Content-Type":"application/json",apikey:SK,Authorization:"Bearer "+SK,Prefer:"return=representation"};
+async function dbGet(t){try{const r=await fetch(SB+"/rest/v1/"+t+"?select=*",{headers:H});return r.ok?r.json():[]}catch{return[]}}
+async function dbUp(t,d){try{await fetch(SB+"/rest/v1/"+t,{method:"POST",headers:{...H,Prefer:"resolution=merge-duplicates,return=representation"},body:JSON.stringify(d)})}catch{}}
+async function dbDel(t,id){try{await fetch(SB+"/rest/v1/"+t+"?id=eq."+id,{method:"DELETE",headers:H})}catch{}}
+const gid=()=>Math.random().toString(36).slice(2,9);
+const tod=()=>new Date().toISOString().slice(0,10);
+const fmt=d=>new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+const T={iv:"#FAF7F0",ivD:"#F0EBE0",ivDD:"#E8E0D0",ink:"#3D2B1F",inkL:"#6B4F3A",inkLL:"#A07858",gl:"#E8C97A",sg:"#4A6B4A",sgL:"#6B9B6B",sgLL:"#C8DFC8",in:"#2C3561",inL:"#4A5A9B",inLL:"#C8CDE8",rs:"#8B3A52",rsL:"#C4657D",rsLL:"#F0D0D8",ln:"#D8CFC0"};
+const lined=()=>"repeating-linear-gradient(transparent,transparent 27px,#DDD5C8 27px,#DDD5C8 28px)";
+const SECS=[{id:"notes",lb:"Notes",ic:"pencil",bg:"#FDF9F3"},{id:"taches",lb:"Taches",ic:"check",bg:"#F4F8F4"},{id:"planning",lb:"Planning",ic:"clock",bg:"#F3F4FA"},{id:"reves",lb:"Reves",ic:"moon",bg:"#FBF3F5"}];
+
+function Spin(){return(<div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:40}}><div style={{width:28,height:28,border:"3px solid #D8CFC0",borderTopColor:"#A07858",borderRadius:"50%",animation:"spin .8s linear infinite"}}/></div>)}
+
+function Cover({onOpen}){
+  const [h,setH]=useState(false);
+  return(<div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#2C3561,#1A1F3A 60%,#0D1020)",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",overflow:"hidden",position:"relative"}}>
+    {[...Array(30)].map((_,i)=><div key={i} style={{position:"fixed",width:2,height:2,borderRadius:"50%",background:"#fff",opacity:Math.random()*.6+.1,top:Math.random()*100+"%",left:Math.random()*100+"%",animation:`tw ${2+Math.random()*3}s ease-in-out infinite`,animationDelay:Math.random()*3+"s"}}/>)}
+    <div onClick={onOpen} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)} style={{cursor:"pointer",transform:h?"scale(1.04) translateY(-8px)":"scale(1)",transition:"transform .4s"}}>
+      <div style={{width:220,height:290,position:"relative",filter:"drop-shadow(0 30px 60px #0009)"}}>
+        <div style={{position:"absolute",left:0,top:4,width:24,height:282,borderRadius:"6px 0 0 6px",background:"linear-gradient(180deg,#8B6343,#5A3D22)"}}/>
+        <div style={{position:"absolute",left:20,top:0,width:200,height:290,borderRadius:"2px 8px 8px 2px",background:"linear-gradient(135deg,#7B5030,#4A2E18)"}}>
+          <div style={{position:"absolute",inset:12,border:"1.5px solid #C9A84C55",borderRadius:4}}/>
+          <div style={{textAlign:"center",paddingTop:38,fontSize:36}}>☽</div>
+          <div style={{textAlign:"center",marginTop:14,color:"#E8C97A",fontSize:22,fontWeight:700}}>Mon Cahier</div>
+          <div style={{textAlign:"center",color:"#C9A84C99",fontSize:12,marginTop:6,letterSpacing:".15em"}}>PERSONNEL</div>
+          <div style={{width:80,height:1,background:"#C9A84C55",margin:"16px auto"}}/>
+          <div style={{textAlign:"center",color:"#C9A84C66",fontSize:11}}>{new Date().getFullYear()}</div>
+          <div style={{position:"absolute",right:-3,top:8,bottom:8,width:6,background:"repeating-linear-gradient(to bottom,#FAF7F0 0px,#FAF7F0 2px,#E0D8CC 2px,#E0D8CC 3px)",borderRadius:"0 2px 2px 0"}}/>
+        </div>
+      </div>
+    </div>
+    <div style={{marginTop:36,color:"#C9A84C88",fontSize:13,letterSpacing:".2em"}}>Appuyez pour ouvrir</div>
+  </div>);
+}
+
+function Notes(){
+  const [notes,setNotes]=useState([]);
+  const [active,setActive]=useState(null);
+  const [loading,setLoading]=useState(true);
+  const tmr=useRef(null);
+  useEffect(()=>{dbGet("notes").then(d=>{const s=(d||[]).sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||""));setNotes(s);if(s.length)setActive(s[0].id);setLoading(false);});},[]);
+  function add(){const n={id:gid(),title:"Sans titre",content:"",date:tod(),created_at:new Date().toISOString()};setNotes(p=>[n,...p]);setActive(n.id);dbUp("notes",n);}
+  function upd(id,p){setNotes(prev=>prev.map(n=>n.id===id?{...n,...p}:n));clearTimeout(tmr.current);tmr.current=setTimeout(()=>{const n=notes.find(x=>x.id===id);if(n)dbUp("notes",{...n,...p});},800);}
+  function del(id){setNotes(p=>p.filter(n=>n.id!==id));setActive(notes.find(n=>n.id!==id)?.id||null);dbDel("notes",id);}
+  const cur=notes.find(n=>n.id===active);
+  return(<div style={{display:"flex",height:"100%",overflow:"hidden"}}>
+    <div style={{width:200,borderRight:"1px solid "+T.ln,display:"flex",flexDirection:"column",flexShrink:0}}>
+      <div style={{padding:12,borderBottom:"1px solid "+T.ln}}>
+        <button onClick={add} style={{width:"100%",padding:"7px 0",background:T.ink,border:"none",borderRadius:6,color:T.iv,fontSize:12,fontWeight:600,cursor:"pointer"}}>+ Nouvelle note</button>
+      </div>
+      <div style={{flex:1,overflowY:"auto"}}>
+        {loading?<Spin/>:notes.map(n=><div key={n.id} onClick={()=>setActive(n.id)} style={{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid "+T.ln,background:active===n.id?T.ivDD:"transparent",borderLeft:active===n.id?"3px solid "+T.inkLL:"3px solid transparent"}}>
+          <div style={{fontSize:13,fontWeight:600,color:T.ink,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{n.title||"Sans titre"}</div>
+          <div style={{fontSize:11,color:T.inkLL,marginTop:2}}>{fmt(n.date)}</div>
+        </div>)}
+      </div>
+    </div>
+    {cur?<div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+      <div style={{padding:"16px 24px 12px",borderBottom:"1px solid "+T.ln,display:"flex",alignItems:"center",gap:12}}>
+        <input value={cur.title} onChange={e=>upd(active,{title:e.target.value})} style={{flex:1,border:"none",background:"transparent",fontSize:22,fontWeight:700,color:T.ink,outline:"none"}} placeholder="Titre..."/>
+        <button onClick={()=>del(active)} style={{background:"none",border:"none",color:T.inkLL,cursor:"pointer",fontSize:18}}>🗑</button>
+      </div>
+      <div style={{flex:1,overflow:"auto",backgroundImage:lined()}}>
+        <textarea value={cur.content} onChange={e=>upd(active,{content:e.target.value})} placeholder="Commencez a ecrire..." style={{width:"100%",height:"100%",border:"none",background:"transparent",outline:"none",padding:"12px 32px",fontSize:16,lineHeight:"28px",color:T.ink,resize:"none",boxSizing:"border-box"}}/>
+      </div>
+    </div>:!loading&&<div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:T.inkLL,fontStyle:"italic"}}>Creez votre premiere note</div>}
+  </div>);
+}
+
+function Taches(){
+  const [lists,setLists]=useState([]);
+  const [active,setActive]=useState(null);
+  const [loading,setLoading]=useState(true);
+  const [nTask,setNTask]=useState("");
+  const [nList,setNList]=useState("");
+  useEffect(()=>{dbGet("taches").then(d=>{const x=d||[];setLists(x);if(x.length)setActive(x[0].id);setLoading(false);});},[]);
+  function addL(){if(!nList.trim())return;const l={id:gid(),name:nList.trim(),tasks:[],created_at:new Date().toISOString()};setLists(p=>[...p,l]);setActive(l.id);setNList("");dbUp("taches",l);}
+  function sv(lid,tasks){setLists(p=>p.map(l=>l.id===lid?{...l,tasks}:l));const l=lists.find(x=>x.id===lid);if(l)dbUp("taches",{...l,tasks});}
+  function addT(e){e.preventDefault();if(!nTask.trim()||!active)return;const c=lists.find(l=>l.id===active);if(!c)return;sv(active,[...(c.tasks||[]),{id:gid(),text:nTask.trim(),done:false,priority:false}]);setNTask("");}
+  const cl=lists.find(l=>l.id===active);
+  const done=cl?.tasks?.filter(t=>t.done).length||0,total=cl?.tasks?.length||0,pct=total?Math.round(done/total*100):0;
+  return(<div style={{display:"flex",height:"100%",overflow:"hidden"}}>
+    <div style={{width:180,borderRight:"1px solid "+T.ln,display:"flex",flexDirection:"column",flexShrink:0}}>
+      <div style={{padding:12,borderBottom:"1px solid "+T.ln}}>
+        <div style={{display:"flex",gap:6}}>
+          <input value={nList} onChange={e=>setNList(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addL()} placeholder="Nouvelle liste..." style={{flex:1,border:"1px solid "+T.ln,borderRadius:6,padding:"5px 8px",fontSize:12,background:T.iv,color:T.ink,outline:"none"}}/>
+          <button onClick={addL} style={{background:T.sg,border:"none",borderRadius:6,color:"#fff",padding:"5px 8px",cursor:"pointer"}}>+</button>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:"auto"}}>
+        {loading?<Spin/>:lists.map(l=><div key={l.id} onClick={()=>setActive(l.id)} style={{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid "+T.ln,background:active===l.id?T.sgLL+"66":"transparent",borderLeft:active===l.id?"3px solid "+T.sg:"3px solid transparent"}}>
+          <div style={{fontSize:13,fontWeight:600,color:T.ink}}>{l.name}</div>
+          <div style={{fontSize:11,color:T.sgL,marginTop:2}}>{(l.tasks||[]).filter(t=>!t.done).length} restante(s)</div>
+        </div>)}
+      </div>
+    </div>
+    {cl&&<div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+      <div style={{padding:"16px 24px 12px",borderBottom:"1px solid "+T.ln}}>
+        <div style={{fontSize:20,fontWeight:700,color:T.ink,marginBottom:8}}>{cl.name}</div>
+        {total>0&&<div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div style={{flex:1,height:5,background:T.ivDD,borderRadius:99,overflow:"hidden"}}><div style={{width:pct+"%",height:"100%",background:T.sg,borderRadius:99,transition:"width .4s"}}/></div>
+          <span style={{fontSize:12,color:T.sgL,fontWeight:600}}>{done}/{total}</span>
+        </div>}
+      </div>
+      <form onSubmit={addT} style={{padding:"12px 24px",borderBottom:"1px solid "+T.ln,display:"flex",gap:8}}>
+        <input value={nTask} onChange={e=>setNTask(e.target.value)} placeholder="Ajouter une tache..." style={{flex:1,border:"1px solid "+T.ln,borderRadius:8,padding:"9px 14px",fontSize:14,background:T.iv,color:T.ink,outline:"none"}}/>
+        <button type="submit" style={{background:T.sg,border:"none",borderRadius:8,color:"#fff",padding:"9px 16px",cursor:"pointer",fontWeight:700,fontSize:15}}>+</button>
+      </form>
+      <div style={{flex:1,overflowY:"auto",padding:"8px 24px"}}>
+        {(cl.tasks||[]).length===0&&<div style={{textAlign:"center",color:T.inkLL,fontSize:14,marginTop:40,fontStyle:"italic"}}>Aucune tache pour le moment</div>}
+        {[...(cl.tasks||[])].sort((a,b)=>(b.priority?1:0)-(a.priority?1:0)).map(t=><div key={t.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:"1px solid "+T.ln,opacity:t.done?.55:1}}>
+          <div onClick={()=>sv(active,cl.tasks.map(x=>x.id===t.id?{...x,done:!x.done}:x))} style={{width:22,height:22,borderRadius:6,border:"2px solid "+(t.done?T.sg:T.ln),background:t.done?T.sg:"transparent",cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:13}}>{t.done?"✓":""}</div>
+          <div style={{flex:1,fontSize:15,color:T.ink,textDecoration:t.done?"line-through":"none"}}>{t.text}</div>
+          <button onClick={()=>sv(active,cl.tasks.map(x=>x.id===t.id?{...x,priority:!x.priority}:x))} style={{background:"none",border:"none",cursor:"pointer",fontSize:16,opacity:t.priority?1:.3}}>⭐</button>
+          <button onClick={()=>sv(active,cl.tasks.filter(x=>x.id!==t.id))} style={{background:"none",border:"none",cursor:"pointer",color:T.inkLL,fontSize:15,opacity:.5}}>×</button>
+        </div>)}
+      </div>
+    </div>}
+  </div>);
+}
+
+function Planning(){
+  const [sub,setSub]=useState("day");
+  const [date,setDate]=useState(tod());
+  const [entries,setEntries]=useState({});
+  const [loading,setLoading]=useState(true);
+  const tmr=useRef(null);
+  const MOODS=["😊","😐","😔","😤","😴","🤩"];
+  const SLOTS=["Matin","Avant-midi","Midi","Apres-midi","Soiree","Nuit"];
+  const ICONS=["🌅","☀️","🍽️","🌤️","🌆","🌙"];
+  const DAYS=["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
+  const MONTHS=["Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Decembre"];
+  useEffect(()=>{dbGet("planning").then(d=>{const m={};(d||[]).forEach(r=>{m[r.id]=r.data;});setEntries(m);setLoading(false);});},[]);
+  const get=k=>entries[k]||{};
+  function upd(k,p){const u={...get(k),...p};setEntries(prev=>({...prev,[k]:u}));clearTimeout(tmr.current);tmr.current=setTimeout(()=>dbUp("planning",{id:k,type:k.startsWith("w-")?"week":"day",date:k,data:u}),800);}
+  function wdays(ds){const d=new Date(ds+"T12:00:00"),dow=(d.getDay()+6)%7;return Array.from({length:7},(_,i)=>{const dd=new Date(d);dd.setDate(dd.getDate()-dow+i);return dd.toISOString().slice(0,10);});}
+  function nav(n){const d=new Date(date+"T12:00:00");d.setDate(d.getDate()+(sub==="week"?7:1)*n);setDate(d.toISOString().slice(0,10));}
+  const e=get(date),days=wdays(date),wk="w-"+days[0],we=get(wk);
+  const d0=new Date(days[0]+"T12:00:00"),d6=new Date(days[6]+"T12:00:00");
+  return(<div style={{display:"flex",flexDirection:"column",height:"100%",overflow:"hidden"}}>
+    <div style={{display:"flex",borderBottom:"1px solid "+T.ln,padding:"0 24px",flexShrink:0}}>
+      {["day","week"].map(v=><button key={v} onClick={()=>setSub(v)} style={{padding:"12px 20px",border:"none",background:"transparent",cursor:"pointer",fontSize:13,fontWeight:sub===v?700:500,color:sub===v?T.in:T.inkLL,borderBottom:sub===v?"2.5px solid "+T.in:"2.5px solid transparent",marginBottom:-1}}>{v==="day"?"Vue Journee":"Vue Semaine"}</button>)}
+    </div>
+    <div style={{flex:1,overflowY:"auto",padding:"20px 24px 40px"}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+        <button onClick={()=>nav(-1)} style={{background:"none",border:"1px solid "+T.ln,borderRadius:6,padding:"5px 12px",cursor:"pointer",color:T.ink}}>&#8249;</button>
+        <div style={{fontSize:17,fontWeight:700,color:T.ink,flex:1,textAlign:"center"}}>{sub==="day"?fmt(date):d0.getDate()+" - "+d6.getDate()+" "+MONTHS[d6.getMonth()]+" "+d6.getFullYear()}</div>
+        <button onClick={()=>nav(1)} style={{background:"none",border:"1px solid "+T.ln,borderRadius:6,padding:"5px 12px",cursor:"pointer",color:T.ink}}>&#8250;</button>
+      </div>
+      {loading?<Spin/>:sub==="day"?<div>
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:11,color:T.inL,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>Humeur du jour</div>
+          <div style={{display:"flex",gap:10}}>{MOODS.map(m=><button key={m} onClick={()=>upd(date,{mood:m})} style={{fontSize:22,background:e.mood===m?T.inLL:"transparent",border:"2px solid "+(e.mood===m?T.inL:T.ln),borderRadius:8,padding:"4px 8px",cursor:"pointer"}}>{m}</button>)}</div>
+        </div>
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:11,color:T.inL,fontWeight:700,textTransform:"uppercase",marginBottom:6}}>Intention du jour</div>
+          <input value={e.intention||""} onChange={x=>upd(date,{intention:x.target.value})} placeholder="Ce que je veux accomplir..." style={{width:"100%",border:"none",borderBottom:"1.5px solid "+T.ln,background:"transparent",padding:"6px 0",fontSize:15,color:T.ink,outline:"none",boxSizing:"border-box"}}/>
+        </div>
+        {SLOTS.map((s,i)=><div key={s} style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:10}}>
+          <div style={{width:90,display:"flex",alignItems:"center",gap:6,paddingTop:8,flexShrink:0}}><span>{ICONS[i]}</span><span style={{fontSize:12,color:T.inkLL,fontWeight:600}}>{s}</span></div>
+          <textarea value={(e.slots||{})[s]||""} onChange={x=>upd(date,{slots:{...(e.slots||{}),[s]:x.target.value}})} rows={2} style={{flex:1,border:"1px solid "+T.ln,borderRadius:8,padding:"8px 12px",fontSize:14,color:T.ink,background:T.iv,outline:"none",resize:"vertical",lineHeight:"22px"}}/>
+        </div>)}
+        <div>
+          <div style={{fontSize:11,color:T.inL,fontWeight:700,textTransform:"uppercase",marginBottom:6}}>Gratitude ✨</div>
+          <textarea value={e.gratitude||""} onChange={x=>upd(date,{gratitude:x.target.value})} rows={3} placeholder="3 choses pour lesquelles je suis reconnaissant(e)..." style={{width:"100%",border:"1px solid "+T.ln,borderRadius:8,padding:"10px 14px",fontSize:14,color:T.ink,background:T.iv,outline:"none",resize:"vertical",lineHeight:"24px",boxSizing:"border-box"}}/>
+        </div>
+      </div>:<div>
+        <div style={{marginBottom:16,padding:"12px 16px",background:T.inLL+"44",borderRadius:10,border:"1px solid "+T.inLL}}>
+          <div style={{fontSize:11,color:T.inL,fontWeight:700,textTransform:"uppercase",marginBottom:6}}>Objectif de la semaine</div>
+          <input value={we.goal||""} onChange={x=>upd(wk,{goal:x.target.value})} placeholder="Mon grand objectif..." style={{width:"100%",border:"none",background:"transparent",fontSize:15,color:T.ink,outline:"none",boxSizing:"border-box"}}/>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:6}}>
+          {days.map((d,i)=><div key={d} style={{display:"flex",flexDirection:"column",gap:4}}>
+            <div style={{textAlign:"center",padding:"5px 2px",background:d===tod()?T.in:T.ivDD,borderRadius:6,color:d===tod()?"#fff":T.ink}}>
+              <div style={{fontSize:9,fontWeight:700,opacity:.7}}>{DAYS[i]}</div>
+              <div style={{fontSize:16,fontWeight:700}}>{new Date(d+"T12:00:00").getDate()}</div>
+            </div>
+            <textarea value={(we.days||{})[d]||""} onChange={x=>upd(wk,{days:{...(we.days||{}),[d]:x.target.value}})} rows={7} style={{border:"1px solid "+(d===tod()?T.inL:T.ln),borderRadius:6,padding:"6px",fontSize:11,color:T.ink,background:T.iv,outline:"none",resize:"none",lineHeight:"18px"}}/>
+          </div>)}
+        </div>
+      </div>}
+    </div>
+  </div>);
+}
+
+function Reves(){
+  const [dreams,setDreams]=useState([]);
+  const [active,setActive]=useState(null);
+  const [loading,setLoading]=useState(true);
+  const [adding,setAdding]=useState(false);
+  const [form,setForm]=useState({title:"",date:tod(),content:"",emotions:[],clarity:3,type:"ordinaire"});
+  const EM=["✨ Emerveillement","😨 Peur","😊 Joie","😔 Tristesse","😤 Colere","❓ Confusion","💫 Legerete","🌊 Serenite"];
+  const TY=["ordinaire","lucide","cauchemar","recurrent","prophetique"];
+  const TC={ordinaire:T.inL,lucide:T.gl,cauchemar:T.rs,recurrent:T.sgL,prophetique:"#9B59B6"};
+  useEffect(()=>{dbGet("reves").then(d=>{const s=(d||[]).sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||""));setDreams(s);if(s.length)setActive(s[0].id);setLoading(false);});},[]);
+  function save(){if(!form.title.trim())return;const d={...form,id:gid(),created_at:new Date().toISOString()};setDreams(p=>[d,...p]);setActive(d.id);setAdding(false);dbUp("reves",d);setForm({title:"",date:tod(),content:"",emotions:[],clarity:3,type:"ordinaire"});}
+  function del(id){setDreams(p=>p.filter(d=>d.id!==id));setActive(dreams.find(d=>d.id!==id)?.id||null);dbDel("reves",id);}
+  const cur=dreams.find(d=>d.id===active);
+  const inp={border:"1px solid "+T.ln,borderRadius:6,padding:"7px 10px",fontSize:13,color:T.ink,background:T.iv,outline:"none"};
+  return(<div style={{display:"flex",height:"100%",overflow:"hidden"}}>
+    <div style={{width:210,borderRight:"1px solid "+T.ln,display:"flex",flexDirection:"column",flexShrink:0,background:"#F8F3FA"}}>
+      <div style={{padding:12,borderBottom:"1px solid "+T.ln}}>
+        <button onClick={()=>setAdding(true)} style={{width:"100%",padding:"7px 0",background:T.rs,border:"none",borderRadius:6,color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer"}}>☽ Nouveau reve</button>
+      </div>
+      <div style={{flex:1,overflowY:"auto"}}>
+        {loading?<Spin/>:dreams.map(d=><div key={d.id} onClick={()=>{setActive(d.id);setAdding(false);}} style={{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid "+T.ln,background:active===d.id&&!adding?T.rsLL+"88":"transparent",borderLeft:active===d.id&&!adding?"3px solid "+T.rs:"3px solid transparent"}}>
+          <div style={{fontSize:12,fontWeight:700,color:T.ink,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.title}</div>
+          <div style={{display:"flex",gap:6,marginTop:3,alignItems:"center"}}>
+            <span style={{fontSize:10,color:TC[d.type]||T.rsL,fontWeight:600,textTransform:"uppercase"}}>{d.type}</span>
+            <span style={{fontSize:10,color:T.inkLL}}>{fmt(d.date)}</span>
+          </div>
+        </div>)}
+      </div>
+    </div>
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+      {adding?<div style={{flex:1,overflowY:"auto",padding:"24px 28px"}}>
+        <div style={{fontSize:20,fontWeight:700,color:T.rs,marginBottom:20}}>☽ Nouveau reve</div>
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <input value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} placeholder="Un titre evocateur..." style={{...inp,width:"100%",boxSizing:"border-box",fontSize:16}}/>
+          <div style={{display:"flex",gap:12}}>
+            <input type="date" value={form.date} onChange={e=>setForm(f=>({...f,date:e.target.value}))} style={inp}/>
+            <select value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))} style={inp}>{TY.map(t=><option key={t}>{t}</option>)}</select>
+          </div>
+          <textarea value={form.content} onChange={e=>setForm(f=>({...f,content:e.target.value}))} rows={7} placeholder="Decrivez votre reve..." style={{...inp,width:"100%",resize:"vertical",lineHeight:"28px",boxSizing:"border-box",backgroundImage:lined()}}/>
+          <div>
+            <div style={{fontSize:11,color:T.rs,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>Emotions</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8}}>{EM.map(em=><button key={em} onClick={()=>setForm(f=>({...f,emotions:f.emotions.includes(em)?f.emotions.filter(x=>x!==em):[...f.emotions,em]}))} style={{padding:"5px 12px",border:"1.5px solid "+(form.emotions.includes(em)?T.rs:T.ln),borderRadius:20,background:form.emotions.includes(em)?T.rsLL:"transparent",color:form.emotions.includes(em)?T.rs:T.inkLL,fontSize:12,cursor:"pointer"}}>{em}</button>)}</div>
+          </div>
+          <div>
+            <div style={{fontSize:11,color:T.rs,fontWeight:700,textTransform:"uppercase",marginBottom:6}}>Clarte du souvenir - {form.clarity}/5</div>
+            <input type="range" min={1} max={5} value={form.clarity} onChange={e=>setForm(f=>({...f,clarity:+e.target.value}))} style={{width:"100%",accentColor:T.rs}}/>
+          </div>
+          <div style={{display:"flex",gap:10}}>
+            <button onClick={()=>setAdding(false)} style={{flex:1,padding:10,background:T.ivDD,border:"none",borderRadius:8,color:T.ink,fontWeight:600,cursor:"pointer"}}>Annuler</button>
+            <button onClick={save} style={{flex:2,padding:10,background:T.rs,border:"none",borderRadius:8,color:"#fff",fontWeight:700,cursor:"pointer"}}>Enregistrer</button>
+          </div>
+        </div>
+      </div>:cur?<div style={{flex:1,overflowY:"auto",padding:"24px 28px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
+          <div>
+            <div style={{fontSize:22,fontWeight:700,color:T.ink}}>{cur.title}</div>
+            <div style={{display:"flex",gap:10,marginTop:6,alignItems:"center"}}>
+              <span style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:T.rsLL,color:T.rs,fontWeight:700,textTransform:"uppercase"}}>{cur.type}</span>
+              <span style={{fontSize:12,color:T.inkLL,textTransform:"capitalize"}}>{fmt(cur.date)}</span>
+              <span style={{fontSize:12,color:T.inkLL}}>- Clarte {cur.clarity}/5</span>
+            </div>
+          </div>
+          <button onClick={()=>del(cur.id)} style={{background:"none",border:"none",color:T.inkLL,fontSize:18,cursor:"pointer"}}>🗑</button>
+        </div>
+        {cur.emotions?.length>0&&<div style={{marginBottom:16,display:"flex",flexWrap:"wrap",gap:6}}>{cur.emotions.map(em=><span key={em} style={{padding:"4px 12px",borderRadius:20,background:T.rsLL,color:T.rs,fontSize:12,fontWeight:500}}>{em}</span>)}</div>}
+        <div style={{background:T.iv,border:"1px solid "+T.ln,borderRadius:10,padding:"20px 24px",fontSize:16,lineHeight:"28px",color:T.ink,whiteSpace:"pre-wrap",backgroundImage:lined()}}>{cur.content||<span style={{color:T.inkLL,fontStyle:"italic"}}>Aucun recit ecrit.</span>}</div>
+      </div>:<div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:12,color:T.inkLL}}>
+        <div style={{fontSize:40}}>☽</div>
+        <div style={{fontStyle:"italic"}}>Notez vos reves des le reveil</div>
+      </div>}
+    </div>
+  </div>);
+}
+
 function App(){
   const [open,setOpen]=useState(false);
-  if(!open) return(
-    <div onClick={()=>setOpen(true)} style={{minHeight:"100vh",background:"#1A1F3A",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",cursor:"pointer"}}>
-      <div style={{fontSize:60}}>☽</div>
-      <div style={{color:"#E8C97A",fontSize:28,fontWeight:700,marginTop:16,fontFamily:"Georgia,serif"}}>Mon Cahier</div>
-      <div style={{color:"#C9A84C88",fontSize:14,marginTop:12,letterSpacing:"0.2em"}}>Appuyez pour ouvrir</div>
+  const [section,setSection]=useState("notes");
+  const sec=SECS.find(s=>s.id===section);
+  if(!open)return <Cover onOpen={()=>setOpen(true)}/>;
+  return(<div style={{height:"100vh",display:"flex",flexDirection:"column",background:T.ivD}}>
+    <div style={{background:"linear-gradient(135deg,#5A3820,#4A2E18)",display:"flex",alignItems:"center",padding:"0 16px",flexShrink:0,boxShadow:"0 2px 12px #0003",overflowX:"auto"}}>
+      <div onClick={()=>setOpen(false)} style={{cursor:"pointer",paddingRight:14,paddingTop:10,paddingBottom:10,fontSize:20,color:"#E8C97A"}}>☽</div>
+      <div style={{color:"#E8C97A",fontWeight:700,fontSize:15,paddingRight:16,borderRight:"1px solid #ffffff22",marginRight:8,whiteSpace:"nowrap"}}>Mon Cahier</div>
+      {SECS.map(s=><button key={s.id} onClick={()=>setSection(s.id)} style={{padding:"14px 12px",border:"none",background:"transparent",cursor:"pointer",color:section===s.id?"#E8C97A":"#C9A84C77",fontWeight:section===s.id?700:500,fontSize:13,borderBottom:section===s.id?"2.5px solid #E8C97A":"2.5px solid transparent",whiteSpace:"nowrap",fontFamily:"Georgia,serif"}}>{s.lb}</button>)}
     </div>
-  );
-  return(
-    <div style={{minHeight:"100vh",background:"#FAF7F0",fontFamily:"Georgia,serif",display:"flex",alignItems:"center",justifyContent:"center"}}>
-      <div style={{fontSize:20,color:"#3D2B1F"}}>✓ Cahier chargé avec succès !<br/>Le code complet sera ajouté ici.</div>
+    <div style={{flex:1,display:"flex",overflow:"hidden"}}>
+      <div style={{width:24,background:T.iv,borderRight:"2px solid #E8A0A066",flexShrink:0}}/>
+      <div style={{flex:1,background:sec.bg,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+        {section==="notes"&&<Notes/>}
+        {section==="taches"&&<Taches/>}
+        {section==="planning"&&<Planning/>}
+        {section==="reves"&&<Reves/>}
+      </div>
     </div>
-  );
+  </div>);
 }
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
